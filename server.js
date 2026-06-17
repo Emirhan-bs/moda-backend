@@ -15,7 +15,6 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use('/api', uploadRouter);
 
 app.get('/', (req, res) => {
     res.json({ status: 'Moda Backend Çalışıyor!' });
@@ -47,6 +46,7 @@ app.post('/api/translate', async (req, res) => {
   }
 });
 
+app.use('/api', uploadRouter);
 
 app.listen(PORT, () => {
     console.log(`Server ${PORT} portunda çalışıyor`);
