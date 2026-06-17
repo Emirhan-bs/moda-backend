@@ -29,35 +29,25 @@ app.post('/api/translate', async (req, res) => {
   }
 
   try {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=tr&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Google yanıt vermedi: ${response.status}`);
-    }
+    const response = await fetch(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=tr|${targetLang}`
+    );
 
     const data = await response.json();
     
-    if (!data || !data[0]) {
-      throw new Error('Geçersiz yanıt formatı');
+    if (data.responseStatus !== 200) {
+      throw new Error('Çeviri başarısız: ' + data.responseMessage);
     }
 
-    const translated = data[0]
-      .filter((item) => item && item[0])
-      .map((item) => item[0])
-      .join('');
-      
+    const translated = data.responseData.translatedText;
     res.json({ translated });
   } catch (error) {
     console.error('Translate error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
+
+
 app.listen(PORT, () => {
     console.log(`Server ${PORT} portunda çalışıyor`);
 });
